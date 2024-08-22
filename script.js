@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let obj = {
         key1: "value",
         key2: "another value" // Changed to unique keys
-    }; // Removed extra semicolon
+     // Removed extra semicolon
 
     console.log("Welcome to my website"); // Changed to double quotes
 
