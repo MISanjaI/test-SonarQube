@@ -1,20 +1,18 @@
-// script.js
 document.addEventListener('DOMContentLoaded', () => {
     const welcomeMessage = document.createElement('p');
-    welcomeMessage.textContent = 'Hello, welcome to my website;  // Missing closing quote (Syntax error)
-    document.querySelector('main').appendChild(welcomeMessage)
-    // Missing semicolon (Syntax error)
-    
-    let unusedVariable;  // Unused variable (Code smell)
+    welcomeMessage.textContent = 'Hello, welcome to my website'; // Fixed closing quote
+    document.querySelector('main').appendChild(welcomeMessage); // Added semicolon
 
-    const anotherMessage = "Another message"  // Missing semicolon (Syntax error)
-    document.querySelector('main').appendChild(anotherMessage);  // Appending a string instead of an element (Logic error)
+    let unusedVariable; // Added semicolon
+    const anotherMessage = document.createElement('p'); // Changed to create an element
+    anotherMessage.textContent = "Another message"; // Added semicolon
+    document.querySelector('main').appendChild(anotherMessage); // Appending the correct element
     
     let obj = {
-        key: "value",
-        key: "another value"  // Duplicate key in object (Syntax error)
-    };
-    
-    console.log('Welcome to my website');  // Single quotes instead of double quotes (Stylistic issue if your linter prefers double quotes)
-});
+        key1: "value",
+        key2: "another value" // Changed to unique keys
+    }; // Removed extra semicolon
+
+    console.log("Welcome to my website"); // Changed to double quotes
+
 
