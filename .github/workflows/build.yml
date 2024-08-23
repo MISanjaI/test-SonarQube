@@ -17,6 +17,17 @@ jobs:
     
       - name: Check Node.js Version
         run: node -v
+       # Set up Node.js 18
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Install dependencies (if needed)
+      - run: npm install
+
+      # Run your build or test scripts
+      - run: npm run build
           
       - uses: sonarsource/sonarqube-scan-action@master
         env:
