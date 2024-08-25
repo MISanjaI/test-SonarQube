@@ -29,7 +29,7 @@ STEP 2: Extract the ZIP File
     unzip sonarqube-<version>.zip -d /opt/sonarqube
 ----------------------------------------------------------------------------------
 
-== You have the freedom to choose any database that suits your needs or requirements. I choose POSTGRESQL for this one !!! ==
+== You have the freedom to choose any database that suits your needs or requirements. I choose PostgreSQL for this one !!! ==
 
 STEP 3: Database Setup (PostgreSQL)
 
