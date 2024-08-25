@@ -8,9 +8,8 @@ integrating SonarQube for a sample web project
 "SonarQube Installation Guide"
   Prerequisites:
    1. Java: Ensure you have Java 11 or higher installed.
-  You can check your Java version by running:
+  You can check your Java version by running in the terminal:
  ----------------------------------------------------------------------------
-          bash
           java -version
  ----------------------------------------------------------------------------
  
@@ -24,9 +23,8 @@ STEP 1: Download SonarQube
 
 STEP 2: Extract the ZIP File
 
-  Extract the contents to a directory of your choice. For example:
+  Extract the contents to a directory of your choice. For example: (enter these commands in terminal)
 ----------------------------------------------------------------------------------
-    bash
     mkdir /opt/sonarqube
     unzip sonarqube-<version>.zip -d /opt/sonarqube
 ----------------------------------------------------------------------------------
@@ -38,39 +36,33 @@ STEP 3: Database Setup (PostgreSQL)
  a) Install PostgreSQL
    Update your package list:
 ----------------------------------------------------------------------------------
-    bash
     sudo apt-get update
 ----------------------------------------------------------------------------------
 
    Install PostgreSQL:
 ----------------------------------------------------------------------------------
-    bash
     sudo apt-get install postgresql
 ----------------------------------------------------------------------------------
 
 b) Create a Database and User for SonarQube
    Switch to PostgreSQL User: Access the PostgreSQL prompt by switching to the postgres user:
 ----------------------------------------------------------------------------------
-    bash
     sudo -u postgres psql
 ----------------------------------------------------------------------------------
 
   Create Database: Create a new database named sonarqube:
 ----------------------------------------------------------------------------------
-    sql
     CREATE DATABASE sonarqube;
 ----------------------------------------------------------------------------------
 
   Create User: Create a user named sonarqube with a secure password:
 ----------------------------------------------------------------------------------
-    sql
     CREATE USER sonarqube WITH ENCRYPTED PASSWORD 'your_password';
 ----------------------------------------------------------------------------------
 # Replace the 'your_password' with your desired password.
 
   Grant Privileges: Allow the sonarqube user to access the database:
 ----------------------------------------------------------------------------------
-    sql
     GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;
 ----------------------------------------------------------------------------------
 
@@ -82,7 +74,6 @@ STEP 4: Configure SonarQube
   
   Open Configuration File: Use a text editor to open the sonar.properties configuration file:
 ----------------------------------------------------------------------------------
-    bash
     nano /opt/sonarqube/conf/sonar.properties
 ----------------------------------------------------------------------------------
 
@@ -90,7 +81,6 @@ STEP 4: Configure SonarQube
 
   Uncomment and Modify: Find the following lines in the file and modify them to match your PostgreSQL setup:
 ----------------------------------------------------------------------------------
-    bash
     sonar.jdbc.username=sonarqube
     sonar.jdbc.password=your_password
     sonar.jdbc.url=jdbc:postgresql://localhost/sonarqube
@@ -103,13 +93,11 @@ STEP 5: Start SonarQube
   Run the Startup Script
  Navigate to the Bin Directory: Change to the directory that contains the startup scripts. Replace [your_OS] with your operating system (e.g., linux-x86-64):
 -----------------------------------------------------------------------------------
-    bash
     cd /opt/sonarqube/bin/[your_OS]
 -----------------------------------------------------------------------------------
 
  Start SonarQube: Execute the startup script to launch the SonarQube server:
 -----------------------------------------------------------------------------------
-    bash
     ./sonar.sh start
 -----------------------------------------------------------------------------------
 
@@ -117,7 +105,6 @@ STEP 6: Access SonarQube
 
   Open Web Browser: After starting the server, open a web browser and navigate to:
 -----------------------------------------------------------------------------------
-    text
     http://localhost:9000
 -----------------------------------------------------------------------------------
 
