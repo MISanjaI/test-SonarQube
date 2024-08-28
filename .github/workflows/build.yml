@@ -41,8 +41,7 @@ jobs:
             SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
         run: |
              # Escape special characters in the SonarQube report
-             ESCAPED_REPORT=$(jq -Rs '.' sonarqube_report.json | sed 's/"/\\"/g; s/\\/\\\\/g; s/$/\\n/' | tr -d '\n')
-             
+             ESCAPED_REPORT=$(jq -Rs '.' sonarqube_report.json | sed 's/"/\\"/g; s/\\/\\\\/g')
              # Prepare the story name
              STORY_NAME="SonarQube Analysis Report"
              
