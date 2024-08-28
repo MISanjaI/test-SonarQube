@@ -40,6 +40,7 @@ jobs:
       - name: Post Results to Shortcut
         run: |
           curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
+          --http1.1 \
           -H "Content-Type: application/json" \
           -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
           -d "$(cat <<EOF
