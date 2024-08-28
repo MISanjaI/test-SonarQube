@@ -42,11 +42,14 @@ jobs:
           curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
           -H "Content-Type: application/json" \
           -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
-          -d '{
-              "name": "SonarQube Analysis Report",
-              "story_type": "chore",
-              "description": "SonarQube analysis completed with the following results:\n\n'"$(cat sonarqube_report.json)"'"
-             }'
+          -d "$(cat <<EOF
+          {
+             \"name\": \"SonarQube Analysis Report\",
+             \"story_type\": \"chore\",
+             \"description\": \"SonarQube analysis completed with the following results:\\n\\n$(cat sonarqube_report.json)\"
+          }
+          EOF
+          )"
           env:
               SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
 
