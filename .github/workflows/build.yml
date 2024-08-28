@@ -27,14 +27,14 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-- name: Fetch SonarQube Analysis Report
-  id: fetch_report
-  run: |
-    curl -u ${{ secrets.SONAR_TOKEN }}: \
-    "https://your_sonarqube_server_url/api/qualitygates/project_status?projectKey=your_project_key" \
-    -o sonarqube_report.json
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Fetch SonarQube Analysis Report
+        id: fetch_report
+        run: |
+            curl -u ${{ secrets.SONAR_TOKEN }}: \
+            "https://your_sonarqube_server_url/api/qualitygates/project_status?projectKey=your_project_key" \
+            -o sonarqube_report.json
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
       - name: Post Results to Shortcut
