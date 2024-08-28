@@ -32,7 +32,7 @@ jobs:
         id: fetch_report
         run: |
             curl -u ${{ secrets.SONAR_TOKEN }}: \
-            "https://http://100.109.166.105:9000/api/qualitygates/project_status?projectKey=test-WebHost24" \
+            "http://100.109.166.105:9000/api/qualitygates/project_status?projectKey=test-WebHost24" \
             -o sonarqube_report.json
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
