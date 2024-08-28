@@ -1,3 +1,4 @@
+
 name: Build
 
 on:
@@ -26,6 +27,35 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Fetch SonarQube Analysis Report
+        id: fetch_report
+        run: |
+            curl -u ${{ secrets.SONAR_TOKEN }}: \
+            "https://http://100.109.166.105:9000/api/qualitygates/project_status?projectKey=test-WebHost24" \
+            -o sonarqube_report.json
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+
+      - name: Post Results to Shortcut
+        run: |
+          curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
+          -H "Content-Type: application/json" \
+          -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
+          -d "$(cat <<EOF
+          {
+             \"name\": \"SonarQube Analysis Report\",
+             \"story_type\": \"chore\",
+             \"description\": \"SonarQube analysis completed with the following results:\\n\\n$(cat sonarqube_report.json)\"
+          }
+          EOF
+          )"
+          env:
+              SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
+
+              
+
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
