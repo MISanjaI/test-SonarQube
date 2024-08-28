@@ -43,34 +43,33 @@ jobs:
             # Read the SonarQube report
             SONARQUBE_REPORT=$(cat sonarqube_report.json)
             
-            # Prepare the story name
-            STORY_NAME="SonarQube Analysis Report"
+            # Set the story ID
+            STORY_ID=35
             
-            # Make the API call to Shortcut
-            RESPONSE=$(curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
+            # Make the API call to Shortcut to update the existing story
+            RESPONSE=$(curl -X PUT "https://api.app.shortcut.com/api/v3/stories/$STORY_ID" \
               --http1.1 \
               -H "Content-Type: application/json" \
               -H "Shortcut-Token: $SHORTCUT_TOKEN" \
               -d @- <<EOF
             {
-              "name": "$STORY_NAME",
-              "story_type": "chore",
+              "name": "SonarQube Analysis Report",
               "description": "SonarQube analysis completed with the following results:\n\n$(echo "$SONARQUBE_REPORT" | jq -c '.' | sed 's/"/\\"/g')"
             }
             EOF
             )
             
             # Check the response
-            HTTP_STATUS=$(echo "$RESPONSE" | jq -r '.http_status // empty')
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.app.shortcut.com/api/v3/stories/$STORY_ID" -H "Shortcut-Token: $SHORTCUT_TOKEN")
             
-            if [ "$HTTP_STATUS" = "201" ]; then
-              echo "Successfully created Shortcut story"
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Successfully updated Shortcut story"
             else
-              echo "Failed to create Shortcut story. Response:"
+              echo "Failed to update Shortcut story. Response:"
               echo "$RESPONSE"
               exit 1
             fi
-                         
+                                     
                            
                 
 
