@@ -43,20 +43,6 @@ jobs:
            # Read the SonarQube report
            SONARQUBE_REPORT=$(cat sonarqube_report.json)
            
-           # Format the SonarQube report
-           FORMATTED_REPORT=$(echo "$SONARQUBE_REPORT" | jq -r '
-             "## SonarQube Analysis Report\n\n" +
-             "- Project: \(.projectKey)\n" +
-             "- Analysis Date: \(.analysisDate)\n\n" +
-             "### Metrics:\n" +
-             (.measures | to_entries[] | "- \(.key): \(.value)\n") +
-             "\n### Issues:\n" +
-             (.issues | group_by(.severity) | to_entries[] |
-               "#### \(.key) Severity:\n" +
-               (.value | map("- \(.message) (in \(.component))") | join("\n"))
-             )
-           ')
-           
            # Set the story ID
            STORY_ID=35
            
@@ -68,7 +54,7 @@ jobs:
              -d @- <<EOF
            {
              "name": "SonarQube Analysis Report",
-             "description": "$FORMATTED_REPORT"
+             "description": "SonarQube analysis completed with the following results:\n\n$(echo "$SONARQUBE_REPORT" | jq -c '.' | sed 's/"/\\"/g')"
            }
            EOF
            )
@@ -83,9 +69,6 @@ jobs:
              echo "$RESPONSE"
              exit 1
            fi
-            
-                                     
-                           
                 
 
       # If you wish to fail your job when the Quality Gate is red, uncomment the
