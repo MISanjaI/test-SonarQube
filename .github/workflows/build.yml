@@ -39,21 +39,31 @@ jobs:
 
       - name: Post Results to Shortcut
         run: |
-          curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
-          --http1.1 \
-          -H "Content-Type: application/json" \
-          -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
-          -d "$(cat <<EOF
-          {
-             \"name\": \"SonarQube Analysis Report\",
-             \"story_type\": \"chore\",
-             \"description\": \"SonarQube analysis completed with the following results:\\n\\n$(cat sonarqube_report.json)\"
-          }
-          EOF
-          )"
-          env:
-              SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
-
+          # Escape special characters in the SonarQube report
+          ESCAPED_REPORT=$(sed 's/"/\\"/g; s/$/\\n/' sonarqube_report.json | tr -d '\n')
+  
+                # Make the API call to Shortcut
+              RESPONSE=$(curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
+              --http1.1 \
+              -H "Content-Type: application/json" \
+              -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
+              -d "{
+              \"name\": \"SonarQube Analysis Report\",
+              \"story_type\": \"chore\",
+              \"description\": \"SonarQube analysis completed with the following results:\\n\\n${ESCAPED_REPORT}\"
+              }" \
+             -w "\nStatus: %{http_code}")
+  
+                # Check the response
+              if echo "$RESPONSE" | grep -q "Status: 2"; then
+              echo "Successfully created Shortcut story"
+              else
+              echo "Failed to create Shortcut story. Response:"
+              echo "$RESPONSE"
+              exit 1
+              fi
+              env:
+                SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
               
 
       # If you wish to fail your job when the Quality Gate is red, uncomment the
