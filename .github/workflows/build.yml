@@ -36,34 +36,38 @@ jobs:
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-
       - name: Post Results to Shortcut
+        env:
+            SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
         run: |
           # Escape special characters in the SonarQube report
-          ESCAPED_REPORT=$(sed 's/"/\\"/g; s/$/\\n/' sonarqube_report.json | tr -d '\n')
-  
-                # Make the API call to Shortcut
-              RESPONSE=$(curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
-              --http1.1 \
-              -H "Content-Type: application/json" \
-              -H "Shortcut-Token: ${{ secrets.SHORTCUT_TOKEN }}" \
-              -d "{
-              \"name\": \"SonarQube Analysis Report\",
-              \"story_type\": \"chore\",
-              \"description\": \"SonarQube analysis completed with the following results:\\n\\n${ESCAPED_REPORT}\"
-              }" \
-             -w "\nStatus: %{http_code}")
-  
-                # Check the response
-              if echo "$RESPONSE" | grep -q "Status: 2"; then
-              echo "Successfully created Shortcut story"
-              else
-              echo "Failed to create Shortcut story. Response:"
-              echo "$RESPONSE"
-              exit 1
-              fi
-              env:
-                SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
+            ESCAPED_REPORT=$(jq -Rs '.' sonarqube_report.json | sed 's/"/\\"/g; s/$/\\n/' | tr -d '\n')
+    
+            # Make the API call to Shortcut
+          RESPONSE=$(curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
+          --http1.1 \
+          -H "Content-Type: application/json" \
+          -H "Shortcut-Token: $SHORTCUT_TOKEN" \
+          -d '{
+          "name": "SonarQube Analysis Report",
+          "story_type": "chore",
+          "description": "SonarQube analysis completed with the following results:\\n\\n'"${ESCAPED_REPORT}"'"
+          }' \
+          -w "\nStatus: %{http_code}" -o response_body.json)
+    
+          # Extract the status code and body
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1)
+          RESPONSE_BODY=$(cat response_body.json)
+
+          # Check the response
+          if [ "$HTTP_STATUS" -eq 201 ]; then
+          echo "Successfully created Shortcut story"
+          else
+          echo "Failed to create Shortcut story. Response:"
+          echo "$RESPONSE_BODY"
+          exit 1
+          fi
+
               
 
       # If you wish to fail your job when the Quality Gate is red, uncomment the
