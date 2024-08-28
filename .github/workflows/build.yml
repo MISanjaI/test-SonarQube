@@ -35,24 +35,27 @@ jobs:
             -o sonarqube_report.json
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+            
       - name: Post Results to Shortcut
         env:
             SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
         run: |
           # Escape special characters in the SonarQube report
-            ESCAPED_REPORT=$(jq -Rs '.' sonarqube_report.json | sed 's/"/\\"/g; s/$/\\n/' | tr -d '\n')
+          ESCAPED_REPORT=$(jq -Rs '.' sonarqube_report.json | sed 's/"/\\"/g; s/$/\\n/' | tr -d '\n')
     
-            # Make the API call to Shortcut
+          # Prepare the story name
+          STORY_NAME="SonarQube Analysis Report"
+    
+          # Make the API call to Shortcut
           RESPONSE=$(curl -X POST "https://api.app.shortcut.com/api/v3/stories" \
           --http1.1 \
           -H "Content-Type: application/json" \
           -H "Shortcut-Token: $SHORTCUT_TOKEN" \
           -d '{
-          "name": "SonarQube Analysis Report",
-          "story_type": "chore",
-          "description": "SonarQube analysis completed with the following results:\\n\\n'"${ESCAPED_REPORT}"'"
-          }' \
+            "name": "'"$STORY_NAME"'",
+            "story_type": "chore",
+            "description": "SonarQube analysis completed with the following results:\\n\\n'"${ESCAPED_REPORT}"'"
+            }' \
           -w "\nStatus: %{http_code}" -o response_body.json)
     
           # Extract the status code and body
