@@ -15,61 +15,11 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Set up Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Fetch SonarQube Analysis Report
-        id: fetch_report
-        run: |
-            curl -u ${{ secrets.SONAR_TOKEN }}: \
-            "http://100.109.166.105:9000/api/qualitygates/project_status?projectKey=test-WebHost24" \
-            -o sonarqube_report.json
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            
-      - name: Post Results to Shortcut
-        env:
-            SHORTCUT_TOKEN: ${{ secrets.SHORTCUT_TOKEN }}
-        run: |
-           # Read the SonarQube report
-           SONARQUBE_REPORT=$(cat sonarqube_report.json)
-           
-           # Set the story ID
-           STORY_ID=35
-           
-           # Make the API call to Shortcut to update the existing story
-           RESPONSE=$(curl -X PUT "https://api.app.shortcut.com/api/v3/stories/$STORY_ID" \
-             --http1.1 \
-             -H "Content-Type: application/json" \
-             -H "Shortcut-Token: $SHORTCUT_TOKEN" \
-             -d @- <<EOF
-           {
-             "name": "SonarQube Analysis Report",
-             "description": "SonarQube analysis completed with the following results:\n\n$(echo "$SONARQUBE_REPORT" | jq -c '.' | sed 's/"/\\"/g')"
-           }
-           EOF
-           )
-           
-           # Check the response
-           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.app.shortcut.com/api/v3/stories/$STORY_ID" -H "Shortcut-Token: $SHORTCUT_TOKEN")
-           
-           if [ "$HTTP_STATUS" = "200" ]; then
-             echo "Successfully updated Shortcut story"
-           else
-             echo "Failed to update Shortcut story. Response:"
-             echo "$RESPONSE"
-             exit 1
-           fi
-                
+                           
 
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
