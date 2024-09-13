@@ -17,6 +17,23 @@
         <p>&copy; 2024 My Website</p>
     </footer>
     <script src="script.js"></script>
+
+    <script>
+        (function(d,t) {
+          var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+          g.src="https://chat.someli.ai/embed.js"
+          s.parentNode.insertBefore(g,s);
+          g.onload=function(){
+            new window.ChaskiqMessengerEncrypted({
+              domain: 'https://chat.someli.ai',
+              ws:  'wss://chat.someli.ai/cable',
+              app_id: "7AiXaTrSzSt4R4nnHM1QKG7P",
+              data: "YOUR_ENCRYPTED_JWE_DATA",
+              lang: "USER_LANG_OR_DEFAULTS_TO_BROWSER_LANG" 
+            })
+          }
+        })(document,"script");
+      </script>
 </body>
 </html>
 
